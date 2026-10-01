@@ -1,21 +1,22 @@
+// src/notification.js
+
+// 브라우저 및 앱 기본 알림 권한 요청
 export async function requestNotificationPermission() {
-    if (!('Notification' in window)) return false;
-    if (Notification.permission === 'granted') return true;
-    if (Notification.permission !== 'denied') {
-      const permission = await Notification.requestPermission();
-      return permission === 'granted';
-    }
-    return false;
+  if (typeof window !== 'undefined' && 'Notification' in window) {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
   }
-  
-  export function sendAppNotification(title, body, isEnabled) {
-    if (!isEnabled) return;
-    if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
-    if ('Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification(`🚨 ${title}`, { body, tag: 'lambda-alert', renotify: true });
-      } catch (e) {
-        console.log('Notification error:', e);
-      }
-    }
+  return false;
+}
+
+// 상단 알림 전송 함수
+export function sendAppNotification(title, body, enabled = true) {
+  if (!enabled) return;
+
+  if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, {
+      body: body,
+      icon: '/favicon.ico'
+    });
   }
+}
